@@ -1,9 +1,10 @@
 const db = require("./create-connection");
 
 async function seed() {
-  await db.query(`DROP TABLE properties;`);
-  await db.query(`DROP TABLE users;`);
-  await db.query(`DROP TABLE propertyTypes;`);
+  await db.query(`DROP TABLE IF EXISTS reviews;`);
+  await db.query(`DROP TABLE IF EXISTS properties;`);
+  await db.query(`DROP TABLE IF EXISTS users;`);
+  await db.query(`DROP TABLE IF EXISTS propertyTypes;`);
 
   await db.query(`CREATE TABLE propertyTypes(
     
@@ -16,7 +17,7 @@ async function seed() {
     first_name VARCHAR NOT NULL,
     surname VARCHAR NOT NULL,
     email VARCHAR NOT NULL,
-    phone_number VARCHAR
+    phone_number VARCHAR,
     is_host BOOL NOT NULL,
     avatar VARCHAR,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -28,7 +29,7 @@ async function seed() {
     host_id INT NOT NULL REFERENCES users(user_id), 
     name VARCHAR NOT NULL,
     location VARCHAR NOT NULL,
-    property_type VARCHAR NOT NULL REFERENCES property_types(property_type),
+    property_type VARCHAR NOT NULL REFERENCES propertyTypes(property_type),
     price_per_night DECIMAL NOT NULL,
     description TEXT
 
