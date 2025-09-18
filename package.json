@@ -1,0 +1,26 @@
+{
+  "name": "pt-be-airbnc",
+  "version": "1.0.0",
+  "description": "This project creates a web application called AirBNC.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "node ./setup/seed-run.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mimicodes534/pt-be-airbnc.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mimicodes534/pt-be-airbnc/issues"
+  },
+  "homepage": "https://github.com/mimicodes534/pt-be-airbnc#readme",
+  "dependencies": {
+    "dotenv": "^17.2.2",
+    "pg": "^8.16.3"
+  }
+}
