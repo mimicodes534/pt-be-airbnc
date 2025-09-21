@@ -1,13 +1,17 @@
 const db = require("./create-connection");
+const format = require("pg-format");
 
-async function seed() {
+async function seed(
+  formattedPropertyTypesData,
+  formattedUsersData,
+  formattedPropertiesData
+) {
   await db.query(`DROP TABLE IF EXISTS reviews;`);
   await db.query(`DROP TABLE IF EXISTS properties;`);
   await db.query(`DROP TABLE IF EXISTS users;`);
   await db.query(`DROP TABLE IF EXISTS propertyTypes;`);
 
   await db.query(`CREATE TABLE propertyTypes(
-    
     property_type VARCHAR NOT NULL PRIMARY KEY,
     description TEXT NOT NULL 
     );`);
@@ -43,6 +47,50 @@ async function seed() {
     comment TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );`);
+
+  await db.query(
+    format(
+      `INSERT INTO propertyTypes (property_type, description)
+    VALUES %L`,
+      formattedPropertyTypesData
+    )
+  );
+
+  const userInfo = await db.query(
+    format(
+      `INSERT INTO users (first_name, surname, email, phone_number, is_host, avatar)
+    VALUES %L RETURNING user_id, first_name, surname`,
+      formattedUsersData
+    )
+  );
+
+  const hostComparison = {};
+  userInfo.rows.forEach((user) => {
+    const fullName = `${user.first_name.trim()} ${user.surname.trim()}`;
+    hostComparison[fullName] = user.user_id;
+  });
+
+  const formattedPropertiesDataWithIDs = formattedPropertiesData.map(
+    (property) => {
+      const hostID = hostComparison[property[0]];
+      return [
+        hostID,
+        property[1],
+        property[2],
+        property[3],
+        property[4],
+        property[5],
+      ];
+    }
+  );
+
+  await db.query(
+    format(
+      `INSERT INTO properties (host_id, name, location, property_type, price_per_night, description)
+    VALUES %L`,
+      formattedPropertiesDataWithIDs
+    )
+  );
 }
 
 module.exports = seed;
