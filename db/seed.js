@@ -4,7 +4,8 @@ const format = require("pg-format");
 async function seed(
   formattedPropertyTypesData,
   formattedUsersData,
-  formattedPropertiesData
+  formattedPropertiesData,
+  formattedReviewsData
 ) {
   await db.query(`DROP TABLE IF EXISTS reviews;`);
   await db.query(`DROP TABLE IF EXISTS properties;`);
@@ -84,11 +85,43 @@ async function seed(
     }
   );
 
-  await db.query(
+  const propertyInfo = await db.query(
     format(
       `INSERT INTO properties (host_id, name, location, property_type, price_per_night, description)
-    VALUES %L`,
+    VALUES %L RETURNING property_id, name`,
       formattedPropertiesDataWithIDs
+    )
+  );
+
+  // property_id
+
+  const propertyComparison = {};
+  propertyInfo.rows.forEach((property) => {
+    propertyComparison[property.name] = property.property_id;
+  });
+
+  // guest_id
+
+  const guestComparison = {};
+  userInfo.rows.forEach((user) => {
+    const fullName = `${user.first_name.trim()} ${user.surname.trim()}`;
+    guestComparison[fullName] = user.user_id;
+  });
+
+  const formattedReviewsWithIDs = formattedReviewsData.map((review) => {
+    return [
+      propertyComparison[review.property_name],
+      guestComparison[review.guest_name],
+      review.rating,
+      review.comment,
+    ];
+  });
+
+  const check = await db.query(
+    format(
+      `INSERT INTO reviews (property_id, guest_id, rating, comment)
+      VALUES %L`,
+      formattedReviewsWithIDs
     )
   );
 }
