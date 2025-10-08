@@ -48,6 +48,25 @@ describe("app", () => {
         .expect(400);
       expect(body.msg).toBe("Bad Request.");
     });
+
+    test("optional query responds with properties less than or equal to max price", async () => {
+      const {
+        body: { properties },
+      } = await request(app).get("/api/properties/?max_price=100").expect(200);
+      properties.forEach((property) => {
+        expect(property.price_per_night).toBeLessThanOrEqual(100);
+      });
+    });
+
+    test("optional query responds with properties more than or equal to min price", async () => {
+      const {
+        body: { properties },
+      } = await request(app).get("/api/properties/?min_price=100").expect(200);
+
+      properties.forEach((property) => {
+        expect(property.price_per_night).toBeMoreThanOrEqual(100);
+      });
+    });
   });
 });
 
