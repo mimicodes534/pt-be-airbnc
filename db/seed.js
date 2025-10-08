@@ -38,7 +38,7 @@ async function seed(
 
   const hostComparison = {};
   userInfo.rows.forEach((user) => {
-    const fullName = `${user.first_name.trim()} ${user.surname.trim()}`;
+    const fullName = `${user.first_name} ${user.surname}`;
     hostComparison[fullName] = user.user_id;
   });
 

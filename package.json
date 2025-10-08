@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "seed": "node ./db/seed-run.js"
+    "seed": "node ./db/seed-run.js",
+    "jest": "jest app"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,12 @@
   "homepage": "https://github.com/mimicodes534/pt-be-airbnc#readme",
   "dependencies": {
     "dotenv": "^17.2.2",
+    "express": "^5.1.0",
     "pg": "^8.16.3",
     "pg-format": "^1.0.4"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
   }
 }

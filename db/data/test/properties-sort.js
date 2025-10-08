@@ -1,4 +1,4 @@
-const { propertiesData } = require("./index");
+const { propertiesData } = require("./index.js");
 
 const formattedPropertiesData = propertiesData.map((type) => {
   return [
