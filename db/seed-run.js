@@ -13,3 +13,5 @@ seed(
 ).then(() => {
   db.end();
 });
+
+module.exports = seed;

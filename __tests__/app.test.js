@@ -1,6 +1,11 @@
 const request = require("supertest");
 const app = require("../app.js");
-const db = require("../db/create-connection");
+const db = require("../db/create-connection.js");
+const seed = require("../db/seed-run.js");
+
+beforeEach(async () => {
+  await seed();
+});
 
 describe("app", () => {
   test("sends back 404 error for invalid path", async () => {
@@ -22,13 +27,16 @@ describe("app", () => {
       const {
         body: { properties },
       } = await request(app).get("/api/properties");
-      console.log(properties);
-      const property = properties[0];
-      expect(property).toHaveProperty("property_id");
-      expect(property).toHaveProperty("property_name");
-      expect(property).toHaveProperty("location");
-      expect(property).toHaveProperty("price_per_night");
-      expect(property).toHaveProperty("host");
+
+      expect(properties.length).toBe(11);
+
+      properties.forEach((property) => {
+        expect(property).toHaveProperty("property_id");
+        expect(property).toHaveProperty("property_name");
+        expect(property).toHaveProperty("location");
+        expect(property).toHaveProperty("price_per_night");
+        expect(property).toHaveProperty("host");
+      });
     });
   });
 
@@ -40,6 +48,7 @@ describe("app", () => {
         .get("/api/properties/?property_type=House")
         .expect(200);
       expect(properties.length).toBe(3);
+      console.log(properties);
     });
 
     test("responds with 400 and error message if invalid property type", async () => {
@@ -54,7 +63,8 @@ describe("app", () => {
         body: { properties },
       } = await request(app).get("/api/properties/?max_price=100").expect(200);
       properties.forEach((property) => {
-        expect(property.price_per_night).toBeLessThanOrEqual(100);
+        expect(+property.price_per_night).toBeLessThanOrEqual(100);
+        expect(properties.length).toBeGreaterThan(0);
       });
     });
 
@@ -64,12 +74,9 @@ describe("app", () => {
       } = await request(app).get("/api/properties/?min_price=100").expect(200);
 
       properties.forEach((property) => {
-        expect(property.price_per_night).toBeMoreThanOrEqual(100);
+        expect(+property.price_per_night).toBeGreaterThanOrEqual(100);
+        expect(properties.length).toBeGreaterThan(0);
       });
     });
   });
-});
-
-afterAll(async () => {
-  await db.end();
 });

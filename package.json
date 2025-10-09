@@ -4,9 +4,9 @@
   "description": "This project creates a web application called AirBNC.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest app",
     "seed": "node ./db/seed-run.js",
-    "jest": "jest app"
+    "create-db": "psql -f db/create-database.sql"
   },
   "repository": {
     "type": "git",
