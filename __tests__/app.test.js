@@ -61,7 +61,6 @@ describe("app", () => {
         .get("/api/properties/?property_type=House")
         .expect(200);
       expect(properties.length).toBe(3);
-      console.log(properties);
     });
 
     test("responds with 400 and error message if invalid property type", async () => {
@@ -164,9 +163,28 @@ describe("app", () => {
       expect(body).toHaveProperty("created_at");
     });
 
-    test("responds with 400 and error message if invalid review parameter", async () => {
+    test("responds with 400 and error message if invalid review param", async () => {
       const { body } = await request(app)
         .post("/api/properties/invalid/reviews")
+        .expect(400);
+      expect(body.msg).toBe("Bad Request.");
+    });
+  });
+
+  describe("DELETE /api/reviews/:id", () => {
+    test("responds with status code of 204 and actually deletes row", async () => {
+      await request(app).delete("/api/reviews/1").expect(204);
+      const reviewId = 1;
+      const { rows } = await db.query(
+        "SELECT * FROM reviews WHERE review_id = $1",
+        [reviewId]
+      );
+      expect(rows.length).toBe(0);
+    });
+
+    test("responds with 400 and error message if invalid review param", async () => {
+      const { body } = await request(app)
+        .delete("/api/reviews/invalid")
         .expect(400);
       expect(body.msg).toBe("Bad Request.");
     });
