@@ -4,6 +4,7 @@ const { getProperties } = require("./controllers/get-properties");
 const { getPropertyReviews } = require("./controllers/get-property-reviews");
 const { newReview } = require("./controllers/post-review");
 const { deleteReview } = require("./controllers/delete-review");
+const { getUserDetails } = require("./controllers/get-user-details");
 
 const app = express();
 app.use(express.json());
@@ -11,6 +12,8 @@ app.use(express.json());
 app.get("/api/properties", getProperties);
 
 app.get("/api/properties/:id/reviews", getPropertyReviews);
+
+app.get("/api/users/:id", getUserDetails);
 
 app.post("/api/properties/:id/reviews", newReview);
 

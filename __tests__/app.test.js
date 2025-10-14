@@ -92,6 +92,34 @@ describe("app", () => {
     });
   });
 
+  describe("GET /api/users/:id", () => {
+    test("responds with status of 200", async () => {
+      await request(app).get("/api/users/1").expect(200);
+    });
+
+    test("body has property of user", async () => {
+      const { body } = await request(app).get("/api/users/1");
+      expect(body).toHaveProperty("user");
+    });
+
+    test("user has user_id, first_name, surname, email, phone_number, created_at properties", async () => {
+      const {
+        body: { user },
+      } = await request(app).get("/api/users/1");
+
+      expect(user).toHaveProperty("user_id");
+      expect(user).toHaveProperty("first_name");
+      expect(user).toHaveProperty("surname");
+      expect(user).toHaveProperty("email");
+      expect(user).toHaveProperty("phone_number");
+      expect(user).toHaveProperty("created_at");
+    });
+
+    test("responds with 400 and error message if invalid user id", async () => {
+      const { body } = await request(app).get("/api/users/invalid").expect(400);
+      expect(body.msg).toBe("Bad Request.");
+    });
+  });
   describe("GET /api/properties/:id/reviews", () => {
     test("responds with status of 200", async () => {
       await request(app).get("/api/properties/1/reviews").expect(200);
