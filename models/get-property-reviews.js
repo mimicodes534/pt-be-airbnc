@@ -1,6 +1,15 @@
 const db = require("../db/create-connection");
 
 exports.fetchPropertyReviews = async (propertyId) => {
+  const { rows: propertyRows } = await db.query(
+    "SELECT * FROM properties WHERE property_id = $1",
+    [propertyId]
+  );
+
+  if (propertyRows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Property not found." });
+  }
+
   const { rows: reviews } = await db.query(
     `SELECT r.review_id, r.comment, r.rating, r.created_at, u.first_name AS guest
           FROM reviews r
@@ -10,6 +19,12 @@ exports.fetchPropertyReviews = async (propertyId) => {
           ORDER BY r.created_at DESC;`,
     [propertyId]
   );
+
+  if (reviews.length === 0) {
+    const error = new Error("No reviews found.");
+    error.status = 404;
+    throw error;
+  }
 
   let average_rating;
 

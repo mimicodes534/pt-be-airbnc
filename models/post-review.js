@@ -7,6 +7,5 @@ exports.postPropertyReview = async (propertyId, guest_id, rating, comment) => {
     RETURNING *`,
     [propertyId, guest_id, rating, comment]
   );
-
   return rows[0];
 };

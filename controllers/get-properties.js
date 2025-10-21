@@ -9,14 +9,9 @@ exports.getProperties = async (req, res, next) => {
       max_price,
       min_price
     );
+
     res.status(200).send({ properties });
   } catch (err) {
     next(err);
   }
 };
-
-// const validTypes = ["House", "Apartment", "Studio"];
-
-// if (property_type && !validTypes.includes(property_type)) {
-//   return res.status(400).send({ msg: "Bad Request." });
-// }

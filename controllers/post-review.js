@@ -2,7 +2,12 @@ const { postPropertyReview } = require("../models/post-review");
 
 exports.newReview = async (req, res, next) => {
   const { guest_id, rating, comment } = req.body;
+  if (!guest_id || !rating || !comment) {
+    return res.status(400).send({ msg: "Bad Request." });
+  }
+
   const propertyId = req.params.id;
+
   const insertedReview = await postPropertyReview(
     propertyId,
     guest_id,

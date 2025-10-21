@@ -63,11 +63,11 @@ describe("app", () => {
       expect(properties.length).toBe(3);
     });
 
-    test("responds with 400 and error message if invalid property type", async () => {
+    test("responds with 404 and error message if property type doesn't exist", async () => {
       const { body } = await request(app)
         .get("/api/properties/?property_type=invalid-id")
-        .expect(400);
-      expect(body.msg).toBe("Bad Request.");
+        .expect(404);
+      expect(body.msg).toBe("Property not found.");
     });
 
     test("optional query responds with properties less than or equal to max price", async () => {
@@ -158,6 +158,20 @@ describe("app", () => {
         .expect(400);
       expect(body.msg).toBe("Bad Request.");
     });
+
+    test("responds with 404 and error message if property ID does not exist", async () => {
+      const { body } = await request(app)
+        .get(`/api/properties/9999/reviews`)
+        .expect(404);
+      expect(body.msg).toBe("Property not found.");
+    });
+
+    test("responds with 404 and error message if property has no reviews", async () => {
+      const { body } = await request(app)
+        .get(`/api/properties/${propertyId}/reviews`)
+        .expect(404);
+      expect(body.msg).toBe("No reviews found.");
+    });
   });
 
   describe("POST /api/properties/:id/reviews", () => {
@@ -197,6 +211,24 @@ describe("app", () => {
         .expect(400);
       expect(body.msg).toBe("Bad Request.");
     });
+
+    test("responds with 404 and error message if property ID does not exist", async () => {
+      const { body } = await request(app)
+        .post(`/api/properties/9999/reviews`)
+        .expect(404);
+      expect(body.msg).toBe("Property not found.");
+    });
+
+    test("responds with 400 and error message if payload missing required fields", async () => {
+      const badPayload = { guest_id: 1, rating: 5 };
+
+      const { body } = await request(app)
+        .post(`/api/properties/2/reviews`)
+        .send(badPayload)
+        .expect(400);
+
+      expect(body.msg).toBe("Bad Request.");
+    });
   });
 
   describe("DELETE /api/reviews/:id", () => {
@@ -215,6 +247,13 @@ describe("app", () => {
         .delete("/api/reviews/invalid")
         .expect(400);
       expect(body.msg).toBe("Bad Request.");
+    });
+
+    test("responds with 404 and error message if property ID does not exist", async () => {
+      const { body } = await request(app)
+        .delete(`/api/properties/9999/reviews`)
+        .expect(404);
+      expect(body.msg).toBe("Property not found.");
     });
   });
 });

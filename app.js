@@ -19,6 +19,10 @@ app.post("/api/properties/:id/reviews", newReview);
 
 app.delete("/api/reviews/:id", deleteReview);
 
+app.all("/*path", (req, res, next) => {
+  res.status(404).send({ msg: "Path not found." });
+});
+
 app.use((err, req, res, next) => {
   const codes = ["25302", "22P02"];
 
@@ -29,12 +33,9 @@ app.use((err, req, res, next) => {
   }
 });
 
-app.all("/*path", (req, res, next) => {
-  res.status(404).send({ msg: "Path not found." });
-});
-
 app.use((err, req, res, next) => {
   res.status(500).send({ msg: "Server Error." });
+  console.log(err);
 });
 
 module.exports = app;

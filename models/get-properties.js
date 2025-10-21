@@ -1,6 +1,17 @@
 const db = require("../db/create-connection");
 
 exports.fetchProperties = async (property_type, max_price, min_price) => {
+  const checkProperty = async (property_type) => {
+    const { rows } = await db.query(
+      `SELECT * FROM properties WHERE property_type = $1;`,
+      [property_type]
+    );
+
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Property not found." });
+    }
+  };
+
   let propertyQuery = `SELECT p.property_id, p.name AS property_name , p.location, p.price_per_night, u.first_name AS host
           FROM properties p
           JOIN users u
@@ -10,6 +21,7 @@ exports.fetchProperties = async (property_type, max_price, min_price) => {
   const conditions = [];
 
   if (property_type) {
+    await checkProperty(property_type);
     conditions.push(` p.property_type = $${optionalQueryInfo.length + 1}`);
     optionalQueryInfo.push(property_type);
   }
