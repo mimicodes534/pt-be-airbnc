@@ -5,11 +5,14 @@ const { getPropertyReviews } = require("./controllers/get-property-reviews");
 const { newReview } = require("./controllers/post-review");
 const { deleteReview } = require("./controllers/delete-review");
 const { getUserDetails } = require("./controllers/get-user-details");
+const { getPropertiesByID } = require("./controllers/get-properties-by-id");
 
 const app = express();
 app.use(express.json());
 
 app.get("/api/properties", getProperties);
+
+app.get("/api/properties/:id", getPropertiesByID);
 
 app.get("/api/properties/:id/reviews", getPropertyReviews);
 
@@ -35,7 +38,6 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
   res.status(500).send({ msg: "Server Error." });
-  console.log(err);
 });
 
 module.exports = app;

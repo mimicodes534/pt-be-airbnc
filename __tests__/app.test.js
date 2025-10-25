@@ -90,6 +90,64 @@ describe("app", () => {
         expect(properties.length).toBeGreaterThan(0);
       });
     });
+
+    test("optional query sorts by price per night in given order", async () => {
+      const {
+        body: { properties },
+      } = await request(app)
+        .get("/api/properties?sort=cost_per_night&order=ascending")
+        .expect(200);
+      for (let i = 0; i < properties.length - 1; i++) {
+        expect(+properties[i].price_per_night).toBeLessThanOrEqual(
+          +properties[i + 1].price_per_night
+        );
+      }
+    });
+
+    test("sends 400 and error message if invalid sort field", async () => {
+      const {
+        body: { properties },
+      } = await request(app)
+        .get("/api/properties?sort=costs&order=ascending")
+        .expect(400);
+      expect(body.msg).toBe("Invalid sort field.");
+    });
+
+    test("sends 400 and error message if invalid order direction", async () => {
+      const {
+        body: { properties },
+      } = await request(app)
+        .get("/api/properties?sort=cost_per_night&order=invalid")
+        .expect(400);
+      expect(body.msg).toBe("Invalid order direction.");
+      console.log(body);
+    });
+  });
+
+  describe("GET /api/properties/:id", () => {
+    test("responds with status of 200", async () => {
+      await request(app).get("/api/properties/1").expect(200);
+    });
+    test("responds with property that matches ID", async () => {
+      const {
+        body: { property },
+      } = await request(app).get("/api/properties/1");
+      expect(property).toHaveProperty("property_id");
+    });
+
+    test("responds with 400 and error message if invalid review param", async () => {
+      const { body } = await request(app)
+        .get("/api/properties/invalid")
+        .expect(400);
+      expect(body.msg).toBe("Bad Request.");
+    });
+
+    test("responds with 404 and error message if property ID does not exist", async () => {
+      const { body } = await request(app)
+        .get("/api/properties/999")
+        .expect(404);
+      expect(body.msg).toBe("Property not found.");
+    });
   });
 
   describe("GET /api/users/:id", () => {

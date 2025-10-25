@@ -1,6 +1,12 @@
 const db = require("../db/create-connection");
 
-exports.fetchProperties = async (property_type, max_price, min_price) => {
+exports.fetchProperties = async (
+  property_type,
+  max_price,
+  min_price,
+  sort,
+  order
+) => {
   const checkProperty = async (property_type) => {
     const { rows } = await db.query(
       `SELECT * FROM properties WHERE property_type = $1;`,
@@ -38,6 +44,30 @@ exports.fetchProperties = async (property_type, max_price, min_price) => {
 
   if (conditions.length > 0) {
     propertyQuery += ` WHERE ${conditions.join(" AND ")}`;
+  }
+
+  const validSortFields = {
+    cost_per_night: "p.price_per_night",
+  };
+
+  const validOrders = ["ascending", "descending"];
+
+  if (sort) {
+    if (!validSortFields[sort]) {
+      return Promise.reject({ status: 400, msg: "Invalid sort field." });
+    }
+
+    const sortField = validSortFields[sort];
+    let sortOrder = "ASC";
+
+    if (order) {
+      if (!validOrders.includes(order)) {
+        return Promise.reject({ status: 400, msg: "Invalid order direction." });
+      }
+      sortOrder = order === "ascending" ? "ASC" : "DESC";
+    }
+
+    propertyQuery += ` ORDER BY ${sortField} ${sortOrder}`;
   }
 
   const { rows: properties } = await db.query(propertyQuery, optionalQueryInfo);
