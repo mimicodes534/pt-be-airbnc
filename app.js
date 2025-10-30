@@ -10,6 +10,8 @@ const { getPropertiesByID } = require("./controllers/get-properties-by-id");
 const app = express();
 app.use(express.json());
 
+app.use(express.static("public"));
+
 app.get("/api/properties", getProperties);
 
 app.get("/api/properties/:id", getPropertiesByID);
