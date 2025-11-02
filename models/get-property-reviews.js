@@ -20,12 +20,6 @@ exports.fetchPropertyReviews = async (propertyId) => {
     [propertyId]
   );
 
-  if (reviews.length === 0) {
-    const error = new Error("No reviews found.");
-    error.status = 404;
-    throw error;
-  }
-
   let average_rating;
 
   if (reviews.length > 0) {

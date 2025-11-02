@@ -6,9 +6,12 @@ exports.postPropertyReview = async (propertyId, guest_id, rating, comment) => {
     [propertyId]
   );
 
-  if (property.length === 0) {
-    return Promise.reject({ status: 404, msg: "Property not found." });
-  }
+  // if (property.length === 0) {
+  //   const error = new Error("Property not found.");
+  //   error.status = 404;
+  //   throw error;
+  //   // return Promise.reject({ status: 404, msg: "Property not found." });
+  // }
 
   const { rows } = await db.query(
     `INSERT INTO reviews (property_id, guest_id, rating, comment) 

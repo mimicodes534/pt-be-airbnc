@@ -39,7 +39,16 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  if (err.status) {
+    res.status(err.status).send({ msg: err.msg });
+  } else {
+    next(err);
+  }
+});
+
+app.use((err, req, res, next) => {
   res.status(500).send({ msg: "Server Error." });
+  console.log(err);
 });
 
 module.exports = app;

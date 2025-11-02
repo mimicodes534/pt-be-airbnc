@@ -67,7 +67,7 @@ describe("app", () => {
       const { body } = await request(app)
         .get("/api/properties/?property_type=invalid-id")
         .expect(404);
-      expect(body.msg).toBe("Property not found.");
+      expect(body.msg).toBe("Property type not found.");
     });
 
     test("optional query responds with properties less than or equal to max price", async () => {
@@ -106,21 +106,18 @@ describe("app", () => {
 
     test("sends 400 and error message if invalid sort field", async () => {
       const {
-        body: { properties },
+        body: { msg },
       } = await request(app)
         .get("/api/properties?sort=costs&order=ascending")
         .expect(400);
-      expect(body.msg).toBe("Invalid sort field.");
+      expect(msg).toBe("Invalid sort field.");
     });
 
     test("sends 400 and error message if invalid order direction", async () => {
-      const {
-        body: { properties },
-      } = await request(app)
+      const { body } = await request(app)
         .get("/api/properties?sort=cost_per_night&order=invalid")
         .expect(400);
       expect(body.msg).toBe("Invalid order direction.");
-      console.log(body);
     });
   });
 
@@ -226,7 +223,7 @@ describe("app", () => {
 
     test("responds with 404 and error message if property has no reviews", async () => {
       const { body } = await request(app)
-        .get(`/api/properties/${propertyId}/reviews`)
+        .get(`/api/properties/2/reviews`)
         .expect(404);
       expect(body.msg).toBe("No reviews found.");
     });
@@ -307,11 +304,11 @@ describe("app", () => {
       expect(body.msg).toBe("Bad Request.");
     });
 
-    test("responds with 404 and error message if property ID does not exist", async () => {
+    test("responds with 404 and error message if review does not exist", async () => {
       const { body } = await request(app)
-        .delete(`/api/properties/9999/reviews`)
+        .delete(`/api/reviews/9999`)
         .expect(404);
-      expect(body.msg).toBe("Property not found.");
+      expect(body.msg).toBe("Review not found.");
     });
   });
 });
